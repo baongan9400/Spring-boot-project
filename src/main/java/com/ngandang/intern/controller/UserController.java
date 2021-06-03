@@ -1,6 +1,7 @@
 package com.ngandang.intern.controller;
 
 import com.ngandang.intern.common.ERole;
+import com.ngandang.intern.payload.RequestLogin;
 import com.ngandang.intern.payload.RequestSignup;
 import com.ngandang.intern.payload.ResponseTransfer;
 import com.ngandang.intern.entity.Role;
@@ -64,9 +65,9 @@ public class UserController {
     }
     @PostMapping(path="/login")
     @ResponseBody
-    public ResponseTransfer login(@RequestBody String username,@RequestBody String password)
+    public ResponseTransfer login(@Valid @RequestBody RequestLogin userLogin)
     {
-        User user = userRepository.findByUsernameAndPassword(username,password);
+        User user = userRepository.findByUsernameAndPassword(userLogin.getUsername(),userLogin.getPassword());
         if (user !=null){
             return new ResponseTransfer(null,"Sign in successfully", user);
         } else
