@@ -1,11 +1,9 @@
-package com.ngandang.intern.payload;
+package com.ngandang.intern.model.response;
 
 public class ResponseTransfer {
-    private String error;
     private String result;
     private Object data;
-    public ResponseTransfer(String error, String result,Object data) {
-        this.error = error;
+    public ResponseTransfer(String result,Object data) {
         this.result = result;
         this.data = data;
     }
@@ -16,14 +14,6 @@ public class ResponseTransfer {
 
     public void setData(Object data) {
         this.data = data;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
     }
 
     public String getResult() {

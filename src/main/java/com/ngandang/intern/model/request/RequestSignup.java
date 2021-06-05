@@ -1,22 +1,24 @@
-package com.ngandang.intern.payload;
+package com.ngandang.intern.model.request;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 import java.util.Set;
 
 public class RequestSignup {
-    @NotBlank
+    @NotBlank(message = "Username is required")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
+    @Size(min = 4, max = 20, message = "Password must have between 4 and 20 characters")
     private String password;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email")
     private String email;
 
+    @Digits(fraction = 0, integer = 11)
     private String phone;
 
+    @NotEmpty
     private Set<String> role;
 
     public RequestSignup(String username, String password, String email, String phone, Set<String> role) {

@@ -1,11 +1,15 @@
 package com.ngandang.intern.controller;
 
 import com.ngandang.intern.common.ERole;
-import com.ngandang.intern.payload.RequestLogin;
-import com.ngandang.intern.payload.RequestSignup;
-import com.ngandang.intern.payload.ResponseTransfer;
+import com.ngandang.intern.model.dto.UserMapper;
+import com.ngandang.intern.model.request.RequestLogin;
+import com.ngandang.intern.model.request.RequestSignup;
+import com.ngandang.intern.model.response.ResponseTransfer;
+import com.ngandang.intern.model.dto.UserDTO;
 import com.ngandang.intern.entity.Role;
 import com.ngandang.intern.entity.User;
+import com.ngandang.intern.exception.LoginFailedException;
+import com.ngandang.intern.exception.ResourceNotFoundException;
 import com.ngandang.intern.reporitory.RoleRepository;
 import com.ngandang.intern.reporitory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,23 +33,19 @@ public class UserController {
     public ResponseTransfer signup(@Valid @RequestBody RequestSignup requestSignup)
     {
         if(userRepository.existsByUsername(requestSignup.getUsername())){
-            return new ResponseTransfer("Username is already taken!","Sign up fail",null);
+            throw  new ResourceNotFoundException("Sign up fail. Username is already taken!");
         }
         if(userRepository.existsByEmail(requestSignup.getEmail())){
-            return new ResponseTransfer("Email is already taken!","Sign up fail",null);
+            throw  new ResourceNotFoundException("Sign up fail. Email is already taken!");
         }
         Set<String> strRoles = requestSignup.getRole();
         Set<Role> roles = new HashSet<>();
-        // Create new user's account
+
         User user = new User(requestSignup.getUsername(),
                 requestSignup.getPassword(),
                 requestSignup.getEmail(),
                 requestSignup.getPhone());
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_SELLER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
+
             strRoles.forEach(role -> {
                 if ("buyer".equals(role)) {
                     Role modRole = roleRepository.findByName(ERole.ROLE_BUYER)
@@ -57,11 +57,10 @@ public class UserController {
                     roles.add(userRole);
                 }
             });
-        }
 
         user.setRoles(roles);
         this.userRepository.save(user);
-        return new ResponseTransfer(null,"Sign up successfully",user);
+        return new ResponseTransfer("Sign up successfully", UserMapper.toUserDTO(user));
     }
     @PostMapping(path="/login")
     @ResponseBody
@@ -69,9 +68,9 @@ public class UserController {
     {
         User user = userRepository.findByUsernameAndPassword(userLogin.getUsername(),userLogin.getPassword());
         if (user !=null){
-            return new ResponseTransfer(null,"Sign in successfully", user);
+            return new ResponseTransfer("Sign in successfully",UserMapper.toUserDTO(user) );
         } else
-            return new ResponseTransfer("Wrong username!","Sign in fail",null);
+            throw new LoginFailedException("The username or password was not correct");
     }
 
 }

@@ -1,4 +1,4 @@
-package com.ngandang.intern.payload;
+package com.ngandang.intern.model.request;
 
 import javax.validation.constraints.NotBlank;
 

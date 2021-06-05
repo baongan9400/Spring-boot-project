@@ -1,44 +1,26 @@
-package com.ngandang.intern.entity;
+package com.ngandang.intern.model.dto;
 
-import org.hibernate.annotations.GenericGenerator;
+import com.ngandang.intern.entity.Role;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
-@Entity
-@Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class UserDTO {
     private Integer id;
-    @NotBlank
+
     private String username;
 
-    @NotBlank
-    private String password;
-
-    @NotBlank
-    @Email
     private String email;
 
     private String phone;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(	name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public User() {
+    public UserDTO() {
     }
 
-    public User(String username, String password, String email, String phone) {
+    public UserDTO(String username,String email, String phone) {
         this.username = username;
-        this.password = password;
         this.email = email;
         this.phone = phone;
     }
@@ -58,14 +40,6 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {
