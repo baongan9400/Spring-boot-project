@@ -1,8 +1,10 @@
 package com.ngandang.intern.entity;
 
+import com.ngandang.intern.model.AuditModel;
+
 import javax.persistence.*;
 @Entity
-public class Scrap {
+public class Scrap extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
