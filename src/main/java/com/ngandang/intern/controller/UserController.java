@@ -1,11 +1,10 @@
 package com.ngandang.intern.controller;
 
 import com.ngandang.intern.common.ERole;
-import com.ngandang.intern.model.dto.UserMapper;
+import com.ngandang.intern.model.dto.Mapper;
 import com.ngandang.intern.model.request.RequestLogin;
 import com.ngandang.intern.model.request.RequestSignup;
 import com.ngandang.intern.model.response.ResponseTransfer;
-import com.ngandang.intern.model.dto.UserDTO;
 import com.ngandang.intern.entity.Role;
 import com.ngandang.intern.entity.User;
 import com.ngandang.intern.exception.LoginFailedException;
@@ -60,7 +59,7 @@ public class UserController {
 
         user.setRoles(roles);
         this.userRepository.save(user);
-        return new ResponseTransfer("Sign up successfully", UserMapper.toUserDTO(user));
+        return new ResponseTransfer("Sign up successfully", Mapper.toUserDTO(user));
     }
     @PostMapping(path="/login")
     @ResponseBody
@@ -68,7 +67,7 @@ public class UserController {
     {
         User user = userRepository.findByUsernameAndPassword(userLogin.getUsername(),userLogin.getPassword());
         if (user !=null){
-            return new ResponseTransfer("Sign in successfully",UserMapper.toUserDTO(user) );
+            return new ResponseTransfer("Sign in successfully", Mapper.toUserDTO(user) );
         } else
             throw new LoginFailedException("The username or password was not correct");
     }
