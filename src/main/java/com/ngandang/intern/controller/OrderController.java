@@ -1,6 +1,7 @@
 package com.ngandang.intern.controller;
 
 import com.ngandang.intern.common.ERole;
+import com.ngandang.intern.common.EStatus;
 import com.ngandang.intern.entity.Order;
 import com.ngandang.intern.entity.Role;
 import com.ngandang.intern.entity.ScrapCategory;
@@ -8,6 +9,7 @@ import com.ngandang.intern.exception.ResourceNotFoundException;
 import com.ngandang.intern.model.dto.Mapper;
 import com.ngandang.intern.model.dto.OrderDTO;
 import com.ngandang.intern.model.request.ReqAddOrder;
+import com.ngandang.intern.model.request.ReqUpdateOrder;
 import com.ngandang.intern.model.response.ResponseTransfer;
 import com.ngandang.intern.reporitory.OrderRepository;
 import com.ngandang.intern.reporitory.RoleRepository;
@@ -77,6 +79,20 @@ public class OrderController {
             orderRepository.save(order);
             return new ResponseTransfer("Add successfully", Mapper.toOrderDTO(order));
         }).orElseThrow(() -> new ResourceNotFoundException("User Id " + reqOrder.getSellerId() + " not found"));
+    }
+    @PutMapping(path="/confirm")
+    @ResponseBody
+    public ResponseTransfer confirmed(@Valid @RequestBody ReqUpdateOrder reqOrder)
+    {
+        return orderRepository.findById(reqOrder.getOrderId()).map(order ->
+        {
+            order.setBuyer(userRepository.findUserById(reqOrder.getBuyer())
+                     .orElseThrow(() -> new ResourceNotFoundException("User Id " + reqOrder.getBuyer() + " not found"))
+            );
+             order.setStatus(EStatus.CONFIRMED);
+             orderRepository.save(order);
+            return new ResponseTransfer("Add successfully", Mapper.toOrderDTO(order));
+        }).orElseThrow(() -> new ResourceNotFoundException("Order Id " + reqOrder.getOrderId() + " not found"));
     }
 
 }

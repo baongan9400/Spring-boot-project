@@ -4,24 +4,44 @@ import com.ngandang.intern.common.ERole;
 import com.ngandang.intern.model.dto.Mapper;
 import com.ngandang.intern.model.request.RequestLogin;
 import com.ngandang.intern.model.request.RequestSignup;
+import com.ngandang.intern.model.response.JwtResponse;
 import com.ngandang.intern.model.response.ResponseTransfer;
 import com.ngandang.intern.entity.Role;
 import com.ngandang.intern.entity.User;
-import com.ngandang.intern.exception.LoginFailedException;
 import com.ngandang.intern.exception.ResourceNotFoundException;
 import com.ngandang.intern.reporitory.RoleRepository;
 import com.ngandang.intern.reporitory.UserRepository;
+import com.ngandang.intern.security.jwt.JWTUtils;
+import com.ngandang.intern.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(path="/user")
 public class UserController {
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JWTUtils jwtUtils;
+
+    @Autowired
+    private PasswordEncoder encoder;
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -41,7 +61,7 @@ public class UserController {
         Set<Role> roles = new HashSet<>();
 
         User user = new User(requestSignup.getUsername(),
-                requestSignup.getPassword(),
+                encoder.encode(requestSignup.getPassword()),
                 requestSignup.getEmail(),
                 requestSignup.getPhone());
 
@@ -62,14 +82,23 @@ public class UserController {
         return new ResponseTransfer("Sign up successfully", Mapper.toUserDTO(user));
     }
     @PostMapping(path="/login")
-    @ResponseBody
-    public ResponseTransfer login(@Valid @RequestBody RequestLogin userLogin)
+    public ResponseEntity<?> login(@Valid @RequestBody RequestLogin requestLogin)
     {
-        User user = userRepository.findByUsernameAndPassword(userLogin.getUsername(),userLogin.getPassword());
-        if (user !=null){
-            return new ResponseTransfer("Sign in successfully", Mapper.toUserDTO(user) );
-        } else
-            throw new LoginFailedException("The username or password was not correct");
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(requestLogin.getUsername(), requestLogin.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJWToken(authentication);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles));
     }
 
 }
