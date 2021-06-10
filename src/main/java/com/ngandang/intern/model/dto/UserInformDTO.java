@@ -10,14 +10,25 @@ public class UserInformDTO extends UserBaseDTO {
 
     private Set<Role> roles = new HashSet<>();
 
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public UserInformDTO() {
         super();
     }
 
-    public UserInformDTO(Integer id,String username, String email, String phone,Set<Role> roles ) {
+    public UserInformDTO(Integer id,String username, String email, String phone,Set<Role> roles ,String url) {
         super(username,email,phone);
         this.id = id;
         this.roles = roles;
+        this.url = url;
     }
     public Integer getId() {
         return id;

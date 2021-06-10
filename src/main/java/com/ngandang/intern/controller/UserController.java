@@ -1,6 +1,7 @@
 package com.ngandang.intern.controller;
 
 import com.ngandang.intern.common.ERole;
+import com.ngandang.intern.entity.Order;
 import com.ngandang.intern.model.dto.Mapper;
 import com.ngandang.intern.model.request.RequestLogin;
 import com.ngandang.intern.model.request.RequestSignup;
@@ -14,6 +15,8 @@ import com.ngandang.intern.reporitory.UserRepository;
 import com.ngandang.intern.security.jwt.JWTUtils;
 import com.ngandang.intern.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +26,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,8 +54,9 @@ public class UserController {
 
     @PostMapping(path="/signup")
     @ResponseBody
-    public ResponseTransfer signup(@Valid @RequestBody RequestSignup requestSignup)
-    {
+    public ResponseTransfer signup(@Valid @RequestPart("user") RequestSignup requestSignup,
+                                   @RequestPart(value = "avatar",  required = false) MultipartFile file)
+            throws IOException {
         if(userRepository.existsByUsername(requestSignup.getUsername())){
             throw  new ResourceNotFoundException("Sign up fail. Username is already taken!");
         }
@@ -78,6 +84,7 @@ public class UserController {
             });
 
         user.setRoles(roles);
+        user.setAvatar(file.getBytes());
         this.userRepository.save(user);
         return new ResponseTransfer("Sign up successfully", Mapper.toUserDTO(user));
     }
@@ -99,6 +106,14 @@ public class UserController {
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 roles));
+    }
+
+    @GetMapping(value = "/{id}",  produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getAvatar(@PathVariable Integer id) {
+        return userRepository.findUserById(id).map(user ->
+                ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + user.getUsername() + "\"")
+                        .body(user.getAvatar())).orElseThrow(() -> new ResourceNotFoundException("URL not found."));
     }
 
 }

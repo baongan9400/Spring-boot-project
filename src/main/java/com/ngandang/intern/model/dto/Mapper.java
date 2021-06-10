@@ -3,12 +3,14 @@ package com.ngandang.intern.model.dto;
 import com.ngandang.intern.entity.Order;
 import com.ngandang.intern.entity.OrderDetails;
 import com.ngandang.intern.entity.User;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.stream.Collectors;
 
 public class Mapper {
     public static UserInformDTO toUserDTO(User user) {
-        return new UserInformDTO(user.getId(),user.getUsername(),user.getPhone(),user.getEmail(),user.getRoles());
+        String url = mapToFileURL(user.getId());
+        return new UserInformDTO(user.getId(),user.getUsername(),user.getPhone(),user.getEmail(),user.getRoles(),url);
     }
     public static UserBaseDTO toUserBaseDTO(User user) {
         return new UserBaseDTO(user.getUsername(),user.getPhone(),user.getEmail());
@@ -32,4 +34,11 @@ public class Mapper {
     public static OrderDetailsDTO toOrderDetailDTO(OrderDetails details){
         return new OrderDetailsDTO(details.getId(),details.getTotal(),details.getWeight(), details.getScrap());
     }
+    private static String mapToFileURL(Integer id) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/user/")
+                .path(id.toString())
+                .toUriString();
+    }
+
 }
