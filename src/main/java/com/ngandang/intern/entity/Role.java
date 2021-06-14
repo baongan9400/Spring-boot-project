@@ -1,10 +1,16 @@
 package com.ngandang.intern.entity;
 
 import com.ngandang.intern.common.ERole;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -12,24 +18,4 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     private ERole name;
-
-    public Role() {
-    }
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ERole getName() {
-        return name;
-    }
-
-    public void setName(ERole name) {
-        this.name = name;
-    }
 }

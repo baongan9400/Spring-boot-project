@@ -12,13 +12,6 @@ public class UserInformDTO extends UserBaseDTO {
 
     private String url;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public UserInformDTO() {
         super();
@@ -44,5 +37,13 @@ public class UserInformDTO extends UserBaseDTO {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

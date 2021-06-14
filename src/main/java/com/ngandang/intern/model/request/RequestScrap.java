@@ -1,10 +1,21 @@
 package com.ngandang.intern.model.request;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class RequestScrap {
+
+    @NotNull(message = "ID is required")
+    private Integer id;
+
     @NotBlank(message = "Scrap's name is required")
     private String name;
 
@@ -14,34 +25,4 @@ public class RequestScrap {
 
     @NotBlank(message = "Category is required")
     private String category;
-
-    public RequestScrap(String name, Integer price, String category) {
-        this.name = name;
-        this.price = price;
-        this.category = category;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }

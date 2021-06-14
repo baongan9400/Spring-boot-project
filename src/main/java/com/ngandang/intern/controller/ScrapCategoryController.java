@@ -1,10 +1,9 @@
 package com.ngandang.intern.controller;
 
-import com.ngandang.intern.common.ECategory;
 import com.ngandang.intern.entity.ScrapCategory;
 import com.ngandang.intern.model.response.ResponseTransfer;
-import com.ngandang.intern.exception.ResourceNotFoundException;
 import com.ngandang.intern.reporitory.ScrapCategoryRepository;
+import com.ngandang.intern.service.ScrapCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +17,9 @@ public class ScrapCategoryController {
     @Autowired
     private ScrapCategoryRepository categoryRepository;
 
+    @Autowired
+    private ScrapCategoryService categoryService;
+
     @GetMapping
     @ResponseBody
     public List<ScrapCategory> getAllCategory() {
@@ -27,34 +29,24 @@ public class ScrapCategoryController {
     @PostMapping("/refresh")
     @ResponseBody
     public List<ScrapCategory> refreshCategory() {
-        categoryRepository.deleteAll();
-        for (ECategory i : ECategory.values()) {
-            categoryRepository.save(new ScrapCategory(i));
-            }
-        return categoryRepository.findAll();
+        return categoryService.refreshCategory();
     }
 
     @PostMapping("/add")
     @ResponseBody
     public ScrapCategory addCategory(@Valid @RequestBody ScrapCategory category) {
-        return categoryRepository.save(category);
+        return categoryService.save(category);
     }
 
     @PutMapping("/update")
     @ResponseBody
     public ScrapCategory updateCategory(@Valid @RequestBody ScrapCategory categoryRequest) {
-        return categoryRepository.findById(categoryRequest.getId()).map(category -> {
-            category.setName(categoryRequest.getName());
-            return categoryRepository.save(category);
-        }).orElseThrow(() -> new ResourceNotFoundException("CategoryId " + categoryRequest.getId() + " not found"));
+        return categoryService.update(categoryRequest);
     }
 
     @DeleteMapping("/delete")
     @ResponseBody
-    public ResponseTransfer deletePost(@RequestParam Integer id) {
-        return categoryRepository.findById(id).map(category -> {
-            categoryRepository.delete(category);
-            return new ResponseTransfer("Delete successfully", category);
-        }).orElseThrow(() -> new ResourceNotFoundException("CategoryId " + id + " not found"));
+    public ResponseTransfer deleteCategory(@RequestParam Integer id) {
+        return new ResponseTransfer("Delete successfully", categoryService.delete(id));
     }
 }

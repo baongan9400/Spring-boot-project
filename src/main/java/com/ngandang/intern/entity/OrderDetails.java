@@ -1,8 +1,15 @@
 package com.ngandang.intern.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "order_details")
 public class OrderDetails{
     @Id
@@ -25,49 +32,6 @@ public class OrderDetails{
         this.total = total;
         this.weight = weight;
         this.order = order;
-        this.scrap = scrap;
-    }
-
-    public OrderDetails() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Double getTotal() {
-        return total;
-    }
-
-    public void setTotal(Double total) {
-        this.total = total;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Scrap getScrap() {
-        return scrap;
-    }
-
-    public void setScrap(Scrap scrap) {
         this.scrap = scrap;
     }
 }

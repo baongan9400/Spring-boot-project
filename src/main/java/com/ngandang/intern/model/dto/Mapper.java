@@ -34,7 +34,7 @@ public class Mapper {
     public static OrderDetailsDTO toOrderDetailDTO(OrderDetails details){
         return new OrderDetailsDTO(details.getId(),details.getTotal(),details.getWeight(), details.getScrap());
     }
-    private static String mapToFileURL(Integer id) {
+    public static String mapToFileURL(Integer id) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/user/")
                 .path(id.toString())

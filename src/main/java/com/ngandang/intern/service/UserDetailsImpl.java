@@ -2,6 +2,10 @@ package com.ngandang.intern.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ngandang.intern.entity.User;
+import com.ngandang.intern.model.dto.Mapper;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
@@ -19,15 +25,18 @@ public class UserDetailsImpl implements UserDetails {
 
     private String email;
 
+    private String url;
+
     @JsonIgnore
     private String password;
-    public UserDetailsImpl(Integer id, String username, String email, String password,
+    public UserDetailsImpl(Integer id, String username, String email, String password,String url,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.url = url;
     }
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -46,24 +55,10 @@ public class UserDetailsImpl implements UserDetails {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
+                Mapper.mapToFileURL(user.getId()),
                 authorities);
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     @Override
     public String getPassword() {
